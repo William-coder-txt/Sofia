@@ -100,6 +100,7 @@ const mediaFrame = document.querySelector(".photo-frame");
 const title = document.querySelector("#slide-title");
 const text = document.querySelector("#slide-text");
 const counter = document.querySelector("#counter");
+const caption = document.querySelector(".caption");
 const dots = document.querySelector("#dots");
 const prevButton = document.querySelector(".nav-button--prev");
 const nextButton = document.querySelector(".nav-button--next");
@@ -108,6 +109,12 @@ const themeToggle = document.querySelector("#theme-toggle");
 let currentSlide = 0;
 let gestureStartX = 0;
 let isDragging = false;
+const isTouchDevice =
+  window.matchMedia("(pointer: coarse)").matches ||
+  /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+document.body.dataset.device = isTouchDevice ? "touch" : "desktop";
+const transitionDuration = isTouchDevice ? 260 : 340;
+const captionTransitionDuration = isTouchDevice ? 200 : 260;
 
 function createDots() {
   slides.forEach((slide, index) => {
@@ -120,12 +127,10 @@ function createDots() {
   });
 }
 
-function showSlide(index) {
-  currentSlide = (index + slides.length) % slides.length;
-  const slide = slides[currentSlide];
-
-  photo.innerHTML = "";
-  photo.style.removeProperty("--photo");
+function createMediaSurface(slide) {
+  const surface = document.createElement("div");
+  surface.className = "media-surface";
+  surface.setAttribute("aria-hidden", "true");
 
   if (slide.type === "video") {
     const video = document.createElement("video");
@@ -141,26 +146,86 @@ function showSlide(index) {
     video.style.width = "100%";
     video.style.height = "100%";
     video.style.objectFit = "cover";
-    photo.appendChild(video);
-
-    const startVideo = () => {
-      video.play().catch(() => {});
-    };
-
-    requestAnimationFrame(startVideo);
-    document.addEventListener("pointerdown", startVideo, { once: true });
-    document.addEventListener("touchstart", startVideo, { once: true });
+    surface.classList.add("media-surface--video");
+    surface.appendChild(video);
   } else {
-    photo.style.setProperty("--photo", `url("${slide.image}")`);
+    surface.classList.add("media-surface--image");
+    surface.style.setProperty("--media-image", `url("${slide.image}")`);
   }
 
-  title.textContent = slide.title;
-  text.textContent = slide.text;
-  counter.textContent = `${currentSlide + 1} / ${slides.length}`;
+  return surface;
+}
+
+function startMediaPlayback(surface) {
+  const video = surface.querySelector("video");
+  if (!video) return;
+
+  const launch = () => {
+    video.play().catch(() => {});
+  };
+
+  requestAnimationFrame(launch);
+  document.addEventListener("pointerdown", launch, { once: true });
+  document.addEventListener("touchstart", launch, { once: true });
+}
+
+function showSlide(index) {
+  currentSlide = (index + slides.length) % slides.length;
+  const slide = slides[currentSlide];
+  const previousSurface = photo.querySelector(".media-surface");
+  const isInitialRender = !previousSurface;
+
+  photo.innerHTML = "";
+  photo.style.removeProperty("--photo");
+
+  const nextSurface = createMediaSurface(slide);
+  nextSurface.classList.add(isInitialRender ? "is-active" : "is-entering");
+  photo.appendChild(nextSurface);
+
+  caption.classList.remove("is-active");
+  caption.classList.add("is-transitioning");
+  title.classList.add("is-hidden");
+  text.classList.add("is-hidden");
+  counter.classList.add("is-hidden");
 
   document.querySelectorAll(".dot").forEach((dot, dotIndex) => {
     dot.classList.toggle("is-active", dotIndex === currentSlide);
   });
+
+  window.setTimeout(() => {
+    title.textContent = slide.title;
+    text.textContent = slide.text;
+    counter.textContent = `${currentSlide + 1} / ${slides.length}`;
+
+    title.classList.remove("is-hidden");
+    text.classList.remove("is-hidden");
+    counter.classList.remove("is-hidden");
+
+    requestAnimationFrame(() => {
+      nextSurface.classList.add("is-active");
+      caption.classList.add("is-active");
+      caption.classList.remove("is-transitioning");
+
+      if (previousSurface) {
+        previousSurface.classList.add("is-leaving");
+      }
+    });
+  }, captionTransitionDuration);
+
+  if (previousSurface) {
+    const previousVideo = previousSurface.querySelector("video");
+    if (previousVideo) {
+      previousVideo.pause();
+    }
+
+    window.setTimeout(() => {
+      previousSurface.remove();
+    }, transitionDuration + 40);
+  }
+
+  if (slide.type === "video") {
+    startMediaPlayback(nextSurface);
+  }
 }
 
 function nextSlide() {

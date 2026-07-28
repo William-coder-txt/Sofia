@@ -243,18 +243,41 @@ h1 {
 }
 
 .photo {
+  position: relative;
   width: 100%;
   height: 100%;
   border-radius: 6px;
-  background-image:
-    linear-gradient(180deg, rgba(48, 45, 54, 0.04), rgba(48, 45, 54, 0.18)),
-    var(--photo);
-  background-size: cover;
-  background-position: center;
   overflow: hidden;
+  isolation: isolate;
+  background: transparent;
 }
 
-.photo video {
+.media-surface {
+  position: absolute;
+  inset: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  opacity: 0;
+  transform: translate3d(0, 18px, 0) scale(0.985);
+  transition:
+    transform 340ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 340ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  will-change: transform, opacity;
+}
+
+.media-surface--image {
+  background-image:
+    linear-gradient(180deg, rgba(48, 45, 54, 0.04), rgba(48, 45, 54, 0.18)),
+    var(--media-image);
+  background-size: cover;
+  background-position: center;
+}
+
+.media-surface--video {
+  background: #000;
+}
+
+.media-surface--video video {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -263,8 +286,99 @@ h1 {
   background: #000;
 }
 
+.media-surface.is-active {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
+}
+
+.media-surface.is-leaving {
+  opacity: 0;
+  transform: translate3d(0, -12px, 0) scale(0.985);
+}
+
+body[data-device="touch"] .media-surface {
+  transition-duration: 260ms;
+  transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+  transform: translate3d(18px, 0, 0) scale(0.985);
+}
+
+body[data-device="touch"] .media-surface.is-active {
+  transform: translate3d(0, 0, 0) scale(1);
+}
+
+body[data-device="touch"] .media-surface.is-leaving {
+  transform: translate3d(-16px, 0, 0) scale(0.985);
+}
+
 .caption {
   padding: 24px 26px 28px;
+  transition:
+    transform 340ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 340ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.caption .counter,
+.caption h2,
+.caption p {
+  transition:
+    transform 240ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 240ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  will-change: transform, opacity;
+}
+
+.caption.is-transitioning {
+  opacity: 0;
+  transform: translate3d(0, 12px, 0);
+}
+
+.caption.is-transitioning .counter,
+.caption.is-transitioning h2,
+.caption.is-transitioning p {
+  opacity: 0;
+  transform: translate3d(0, 10px, 0);
+}
+
+.caption.is-active {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.caption.is-active .counter,
+.caption.is-active h2,
+.caption.is-active p {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.caption .is-hidden {
+  opacity: 0;
+  transform: translate3d(0, 10px, 0);
+}
+
+body[data-device="touch"] .caption {
+  transition-duration: 260ms;
+  transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+body[data-device="touch"] .caption .counter,
+body[data-device="touch"] .caption h2,
+body[data-device="touch"] .caption p {
+  transition-duration: 200ms;
+  transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+body[data-device="touch"] .caption.is-transitioning .counter,
+body[data-device="touch"] .caption.is-transitioning h2,
+body[data-device="touch"] .caption.is-transitioning p,
+body[data-device="touch"] .caption .is-hidden {
+  transform: translate3d(0, 8px, 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .media-surface,
+  .caption {
+    transition: none !important;
+  }
 }
 
 .counter {
