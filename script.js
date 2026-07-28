@@ -93,6 +93,13 @@ const slides = [
     title: "Вкусняшки",
     text: "Маленькая коробочка с вкусняшками.😋",
   },
+  {
+    type: "video",
+    video: "videos/video-8.mp4",
+    poster: "images/photo-11.jpg",
+    title: "Смотри что нашел",
+    text: "❤️",
+  },
 ];
 
 const photo = document.querySelector("#photo");
