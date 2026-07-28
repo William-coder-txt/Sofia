@@ -133,6 +133,8 @@ function showSlide(index) {
     video.poster = slide.poster;
     video.controls = true;
     video.playsInline = true;
+    video.setAttribute("playsinline", "");
+    video.setAttribute("webkit-playsinline", "");
     video.preload = "metadata";
     video.autoplay = true;
     video.volume = 1;
@@ -147,6 +149,7 @@ function showSlide(index) {
 
     requestAnimationFrame(startVideo);
     document.addEventListener("pointerdown", startVideo, { once: true });
+    document.addEventListener("touchstart", startVideo, { once: true });
   } else {
     photo.style.setProperty("--photo", `url("${slide.image}")`);
   }
@@ -203,8 +206,18 @@ mediaFrame.addEventListener("pointerdown", (event) => {
   mediaFrame.classList.add("is-dragging");
 });
 
+mediaFrame.addEventListener("touchstart", (event) => {
+  gestureStartX = event.changedTouches[0].clientX;
+  isDragging = true;
+  mediaFrame.classList.add("is-dragging");
+});
+
 document.addEventListener("pointerup", (event) => {
   handleGesture(event.clientX);
+});
+
+document.addEventListener("touchend", (event) => {
+  handleGesture(event.changedTouches[0].clientX);
 });
 
 document.addEventListener("pointercancel", () => {
