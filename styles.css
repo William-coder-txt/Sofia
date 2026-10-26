@@ -60,6 +60,96 @@ body {
   -webkit-text-size-adjust: 100%;
 }
 
+.welcome-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  color: #fffaf3;
+  text-align: center;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(255, 205, 177, 0.34), transparent 34%),
+    linear-gradient(145deg, #b8653d, #d77f7d 55%, #9d526f);
+  opacity: 1;
+  transition: opacity 700ms ease, visibility 700ms ease;
+}
+
+.welcome-screen.is-leaving {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.welcome-content {
+  animation: welcomeAppear 900ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.welcome-content h1 {
+  margin: 14px 0 28px;
+  font-size: clamp(2.6rem, 9vw, 5rem);
+  line-height: 1;
+  text-shadow: 0 4px 24px rgba(76, 28, 40, 0.22);
+}
+
+.welcome-heart {
+  display: inline-block;
+  color: #fff2eb;
+  font-size: clamp(4rem, 14vw, 7rem);
+  line-height: 1;
+  filter: drop-shadow(0 8px 18px rgba(76, 28, 40, 0.25));
+  animation: welcomeHeartbeat 1.2s ease-in-out infinite;
+}
+
+.welcome-button {
+  padding: 12px 28px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 999px;
+  color: #fffaf3;
+  background: rgba(255, 255, 255, 0.14);
+  cursor: pointer;
+  transition: background 160ms ease, transform 160ms ease;
+}
+
+.welcome-button:hover,
+.welcome-button:focus-visible {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+}
+
+.welcome-button:focus-visible {
+  outline: 3px solid rgba(255, 255, 255, 0.55);
+  outline-offset: 4px;
+}
+
+@keyframes welcomeAppear {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes welcomeHeartbeat {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  15% {
+    transform: scale(1.12);
+  }
+  30% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.08);
+  }
+}
+
 .heart-background {
   position: fixed;
   inset: 0;
@@ -416,6 +506,13 @@ body[data-device="touch"] .caption .is-hidden {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .welcome-screen,
+  .welcome-content,
+  .welcome-heart {
+    animation: none !important;
+    transition: none !important;
+  }
+
   .media-surface,
   .caption {
     transition: none !important;

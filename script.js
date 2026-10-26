@@ -139,6 +139,8 @@ const dots = document.querySelector("#dots");
 const prevButton = document.querySelector(".nav-button--prev");
 const nextButton = document.querySelector(".nav-button--next");
 const themeToggle = document.querySelector("#theme-toggle");
+const welcomeScreen = document.querySelector("#welcome-screen");
+const welcomeButton = document.querySelector("#welcome-button");
 
 let currentSlide = 0;
 let gestureStartX = 0;
@@ -149,6 +151,18 @@ const isTouchDevice =
 document.body.dataset.device = isTouchDevice ? "touch" : "desktop";
 const transitionDuration = isTouchDevice ? 260 : 340;
 const captionTransitionDuration = isTouchDevice ? 200 : 260;
+
+function dismissWelcome() {
+  if (!welcomeScreen || welcomeScreen.classList.contains("is-leaving")) return;
+
+  welcomeScreen.classList.add("is-leaving");
+  window.setTimeout(() => welcomeScreen.remove(), 750);
+}
+
+if (welcomeScreen && welcomeButton) {
+  welcomeButton.addEventListener("click", dismissWelcome);
+  window.setTimeout(dismissWelcome, 3200);
+}
 
 function createDots() {
   slides.forEach((slide, index) => {
