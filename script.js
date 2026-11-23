@@ -127,6 +127,19 @@ const slides = [
     poster: "images/photo-11.jpg",
     title: "Мой видосик с зала💪",
   },
+  {
+    image: "images/photo-14.jpg",
+    title: "МегаЛёд⛸️",
+    text: "Наше с тобой катание на коньках.⛸️",
+  },
+   {
+    image: "images/photo-15.jpg",
+    title: "МегаЛёд⛸️"
+  },
+   {
+    image: "images/photo-16.jpg",
+    title: "МегаЛёд⛸️"
+  },
 ];
 
 const photo = document.querySelector("#photo");
